@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { UserDataTable } from './UserDataTable';
 import axios from 'axios';
-import { UserDataTable } from './user/dataTable/UserDataTable';
+
 
 export const Home = () => {
 
     const [users, setUsers] = useState([])
-
 
     // Read all users data [Name and email]
     useEffect(() => {
@@ -16,7 +16,7 @@ export const Home = () => {
 
     return (
         <div>
-            <div className="container bg-light" style={{ height: '100vh', width: 'auto' }}>
+            <div className="container bg-light" style={{ height: '100vh', width: 'vw' }}>
                 <div>
                     <h1>Hello User .!!</h1>
                     <br />

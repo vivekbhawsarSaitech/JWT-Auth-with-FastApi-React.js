@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { TokenContext } from '../../context/context';
 import styles from './SignIn.module.css';
+import axios from 'axios';
 
 export const SignIn = () => {
 
-    const { dispatch } = useContext(TokenContext);
+    const { updateToken, updateLoggedIn, updateEmail } = useContext(TokenContext);
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -36,10 +36,9 @@ export const SignIn = () => {
                     const statusCode = res.data.status_code; // Check the status code from the backend
                     if (statusCode === 200) {
                         const token = res.data.token.access_token;
-                        // Dispatch action to update token and login state
-                        dispatch({ type: 'SET_TOKEN', payload: token });
-                        dispatch({ type: 'SET_LOGGED_IN', payload: true });
-                        dispatch({ type: 'SET_EMAIL', payload: formData.email });
+                        updateToken(token);
+                        updateLoggedIn(true);
+                        updateEmail(formData.email);
                         navigate('/user/home'); // navigate to user/home page
 
                     } else {
@@ -61,7 +60,7 @@ export const SignIn = () => {
                     }
                 });
         }
-    }, [formData, dispatch, navigate]);
+    }, [formData, updateToken, updateLoggedIn, updateEmail, navigate]);
 
 
     return (
@@ -157,7 +156,7 @@ export const SignIn = () => {
                     <span>Login with Google</span>
                 </div> */}
             </div>
-        </section>
+        </section >
     );
 };
 

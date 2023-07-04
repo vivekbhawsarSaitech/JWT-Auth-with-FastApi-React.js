@@ -71,3 +71,17 @@ async def update_user_profile_picute(image_document):
         return True
     else:
         return False
+    
+    
+async def update_user_profile_data(user_data):
+
+    # Filter the document based on the user_email and update it with the user_data
+    result = await user_details_collection.update_one(
+        {"email":user_data.email},
+        {"$set": {"profilePhoto":user_data.profilePhoto , "gender":user_data.gender , "dob":user_data.dob , "phone": user_data.phone, "name":user_data.name}}
+    )
+
+    if result:
+        return True
+    else:
+        return False

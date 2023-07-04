@@ -1,7 +1,9 @@
 from fastapi import Body, FastAPI , HTTPException , Depends , status , Query
 from passlib.context import CryptContext
-from models.user import UserSchema , UserLoginSchema , ImageData
+from models.user import UserSchema , UserLoginSchema 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import UploadFile, File
+
 from bson.binary import Binary
 import base64
 
@@ -13,7 +15,8 @@ from config.db import (
     create_new_user , 
     fetch_all_users ,
     save_blacklisted_token ,
-    update_user_profile_picute
+    update_user_profile_picute,
+    update_user_profile_data
     )
 
 app = FastAPI() 
@@ -40,7 +43,7 @@ async def index():
 
 
 # User signup API endpoint
-@app.post("/user/sign-up", tags=["user-sign-up"], status_code=status.HTTP_201_CREATED)
+@app.post("/user/sign-up",   tags=["user-sign-up"], status_code=status.HTTP_201_CREATED)
 async def signup(user: UserSchema = Body(...)):
     # Check if the user email already exists
     existing_user = await fetch_one_user(user.email)
@@ -51,7 +54,7 @@ async def signup(user: UserSchema = Body(...)):
 
     # Create a new user document
     user_data = {
-        "name": user.fullname,
+        "name": user.name,
         "phone": user.phone,
         "email": user.email,
         "password": hashed_password,
@@ -125,20 +128,13 @@ async def single_user_data(email: str = Query(...)):
     return result
 
 
-# Upload user profile picture
-@app.post("/users/profile/image", tags=["Upload user profile picture as base64"])
-async def set_user_profile_picture(image_data: ImageData):
+@app.post("/users/profile/data", tags=["Update user profile data"])
+async def set_user_profile_data(user:UserSchema):
 
-
-    # Save the image to MongoDB
-    image_document = {
-        "user_email": image_data.user_email,
-        "image_bytes": image_data.image_data
-    }
-
-    result = await update_user_profile_picute(image_document)
+    
+    result = await update_user_profile_data(user)
 
     if result:
-        return {"message":"Profile Picture Updated Succesfully" , "status_code":200}
+        return {"message":"User Data Updated Succesfully" , "status_code":200}
     else:
         return {"message":"There is an error" , "status_code":400}

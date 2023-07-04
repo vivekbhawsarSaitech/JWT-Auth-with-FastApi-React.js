@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import { TokenContext } from '../../context/context';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faAddressBook, faVenusMars, faCalendarDays, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 export const UserProfile = () => {
 
-
     const { token, userEmail } = useContext(TokenContext); // Access the email and Token value
 
+    const [isNewImage, setIsNewImage] = useState(false);
     const [image, setImage] = useState("");
 
     const fileInputRef = useRef(null); // Ref to file input element
@@ -21,7 +22,6 @@ export const UserProfile = () => {
         gender: '',
         profilePhoto: ''
     });
-
 
 
     // convert base64 to Blob
@@ -62,32 +62,15 @@ export const UserProfile = () => {
             });
     }, [userEmail, base64ToBlob, token]);
 
-
-    const handleProfilePhotoChange = useCallback((e) => {
-        // Remove the previous image by setting the image state to an empty string
-        setImage("");
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            profilePhoto: '',
-        }))
-        // Programmatically trigger the file selection dialog
-        if (fileInputRef.current) {
-            fileInputRef.current.value = null; // Set the value to null to clear the file selection
-            fileInputRef.current.click();
-        }
-    }, []);
-
-
-    // convert image to base64 [ new ]
+    // convert image to base64 
     const convertToBase64 = useCallback((e) => {
         var reader = new FileReader();
         reader.readAsDataURL(e.target.files[0]);
         reader.onload = () => {
-            const imageData = reader.result; // Save the Base64 string in a variable
-            setImage(imageData);
+            setImage(reader.result);
             setFormData(prevFormData => ({
                 ...prevFormData,
-                profilePhoto: imageData, // Store the Base64 string in formData
+                profilePhoto: e.target.files[0], // Store the File object in formData
             }));
             fileInputRef.current.value = ""; // Clear the value of the file input
         };
@@ -95,6 +78,24 @@ export const UserProfile = () => {
             console.log("Error: ", error);
         }
     }, []);
+
+    // const convertToBase64 = useCallback((e) => {
+    //     var reader = new FileReader();
+    //     reader.readAsDataURL(e.target.files[0]);
+    //     reader.onload = () => {
+    //         const base64String = reader.result.split(',')[1]; // Extract the base64 string
+    //         setImage(reader.result);
+    //         setFormData(prevFormData => ({
+    //             ...prevFormData,
+    //             profilePhoto: base64String, // Set the base64 string in formData
+    //         }));
+    //         fileInputRef.current.value = ""; // Clear the value of the file input
+    //     };
+    //     reader.onerror = error => {
+    //         console.log("Error: ", error);
+    //     };
+    // }, []);
+
 
 
     const handleInputChange = useCallback((e) => {
@@ -108,13 +109,13 @@ export const UserProfile = () => {
     const handleUserDataSubmit = useCallback((e) => {
         e.preventDefault();
         console.log(formData)
-        axios.post('http://localhost:8000/users/profile/data', formData
-        )
+        axios
+            .post('http://localhost:8000/users/profile/data', formData)
             .then((res) => {
                 // Check the status code from the backend
                 const statusCode = res.data.status_code;
                 if (statusCode === 200) {
-                    alert('Data Updated Succesfully.');
+                    alert('Image Uploaded Succesfully.');
                 } else {
                     console.log(res); // Log the entire response object for debugging
                     alert('An error occurred. Please try again later.');
@@ -137,6 +138,128 @@ export const UserProfile = () => {
 
     }, [formData]);
 
+    // const handleImageSubmit = useCallback((e) => {
+    //     e.preventDefault();
+    //     axios
+    //         .post('http://localhost:8000/users/profile/image', {
+    //             "image_data": image,
+    //             "user_email": userEmail
+    //         })
+    //         .then((res) => {
+    //             // Check the status code from the backend
+    //             const statusCode = res.data.status_code;
+    //             if (statusCode === 200) {
+    //                 alert('Image Uploaded Succesfully.');
+    //             } else {
+    //                 console.log(res); // Log the entire response object for debugging
+    //                 alert('An error occurred. Please try again later.');
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             if (error.response) {
+
+    //                 const statusCode = error.response.status;
+    //                 const errorMessage = error.response.data.detail;
+    //                 alert(`Error: ${statusCode} - ${errorMessage}`);
+    //             } else if (error.request) {
+    //                 // The request was made but no response was received
+    //                 alert('No response received from the server');
+    //             } else {
+    //                 // Something happened in setting up the request that triggered an error
+    //                 alert('Error: ' + error.message);
+    //             }
+    //         });
+
+    // }, [image, userEmail]);
+
+    // const handleImageSubmit = useCallback((e) => {
+    //     e.preventDefault();
+    //     axios
+    //         .post('http://localhost:8000/users/profile/image', {
+    //             "image_data": image,
+    //             "user_email": userEmail
+    //         })
+    //         .then((res) => {
+    //             // Check the status code from the backend
+    //             const statusCode = res.data.status_code;
+    //             if (statusCode === 200) {
+    //                 alert('Image Uploaded Succesfully.');
+    //             } else {
+    //                 console.log(res); // Log the entire response object for debugging
+    //                 alert('An error occurred. Please try again later.');
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             if (error.response) {
+
+    //                 const statusCode = error.response.status;
+    //                 const errorMessage = error.response.data.detail;
+    //                 alert(`Error: ${statusCode} - ${errorMessage}`);
+    //             } else if (error.request) {
+    //                 // The request was made but no response was received
+    //                 alert('No response received from the server');
+    //             } else {
+    //                 // Something happened in setting up the request that triggered an error
+    //                 alert('Error: ' + error.message);
+    //             }
+    //         });
+
+    // }, [image, userEmail]);
+
+    // const handleImageSubmit = useCallback((e) => {
+    //     e.preventDefault();
+
+    //     const reader = new FileReader();
+    //     const file = e.target.files[0];
+
+    //     reader.readAsDataURL(file);
+
+    //     reader.onload = () => {
+    //         const base64Image = reader.result;
+
+    //         setImage(base64Image);
+    //         setFormData(prevFormData => ({
+    //             ...prevFormData,
+    //             profilePhoto: file, // Store the File object in formData
+    //         }));
+    //         fileInputRef.current.value = ""; // Clear the value of the file input
+
+    //         axios
+    //             .post('http://localhost:8000/users/profile/image', {
+    //                 image_data: base64Image,
+    //                 user_email: userEmail,
+    //             })
+    //             .then((res) => {
+    //                 // Check the status code from the backend
+    //                 const statusCode = res.data.status_code;
+    //                 if (statusCode === 200) {
+    //                     alert('Image Uploaded Successfully.');
+    //                 } else {
+    //                     console.log(res); // Log the entire response object for debugging
+    //                     alert('An error occurred. Please try again later.');
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 if (error.response) {
+    //                     const statusCode = error.response.status;
+    //                     const errorMessage = error.response.data.detail;
+    //                     alert(`Error: ${statusCode} - ${errorMessage}`);
+    //                 } else if (error.request) {
+    //                     // The request was made but no response was received
+    //                     alert('No response received from the server');
+    //                 } else {
+    //                     // Something happened in setting up the request that triggered an error
+    //                     alert('Error: ' + error.message);
+    //                 }
+    //             });
+    //     };
+
+    //     reader.onerror = error => {
+    //         console.log("Error: ", error);
+    //     };
+    // }, [userEmail]);
+
+
 
     return (
 
@@ -150,12 +273,12 @@ export const UserProfile = () => {
                             <div className="col-lg-3 col-md-4 d-md-block">
                                 <div className="card bg-common card-left">
                                     <div className="card-body">
-                                        <nav className="nav d-md-block">
+                                        <nav className="nav d-md-block d-none">
 
                                             <div className="form-group">
 
                                                 {image ? (
-                                                    <div className="image-box d-flex flex-column align-items-center">
+                                                    <div className="image-box">
                                                         <img
                                                             src={image}
                                                             alt=""
@@ -171,9 +294,9 @@ export const UserProfile = () => {
                                                             type="button"
                                                             className="btn btn-outline-primary ms-1"
                                                             // onClick={() => fileInputRef.current.click()}
-                                                            onClick={handleProfilePhotoChange}
+                                                            onClick={''}
                                                         >
-                                                            Remove Picture
+                                                            Update Profile Photo
                                                         </button>
                                                     </div>
                                                 ) : (
@@ -188,6 +311,60 @@ export const UserProfile = () => {
                                                 )}
                                             </div>
 
+                                            {/* <div className="form-group">
+                                                {image ? (
+                                                    <div className="image-box">
+                                                        <img
+                                                            src={image}
+                                                            alt=""
+                                                            className="image"
+                                                            style={{
+                                                                maxWidth: '100%',
+                                                                maxHeight: '200px',
+                                                                objectFit: 'cover',
+                                                                marginBottom: '10px',
+                                                            }}
+                                                        />
+                                                        {isNewImage ? (
+                                                            <div>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline-primary ms-1"
+                                                                    onClick={() => fileInputRef.current.click()}
+                                                                >
+                                                                    Change Profile Photo
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-primary ms-1"
+                                                                    onClick={handleImageSubmit}
+                                                                >
+                                                                    Update Image
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-primary ms-1"
+                                                                onClick={handleImageSubmit}
+                                                            >
+                                                                Upload Image
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        id="profilePhoto"
+                                                        name="profilePhoto"
+                                                        ref={fileInputRef}
+                                                        onChange={convertToBase64}
+                                                    />
+                                                )}
+                                            </div> */}
+
+
                                         </nav>
                                     </div>
                                 </div>
@@ -199,7 +376,6 @@ export const UserProfile = () => {
                                 <div className="card">
                                     <div className="card-header border-bottom mb-2">
                                         <div className="table-responsive-md">
-
 
                                             <table className="table table-hover">
 

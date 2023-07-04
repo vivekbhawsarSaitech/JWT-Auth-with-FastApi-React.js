@@ -1,15 +1,16 @@
 import React, { useState, useCallback, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { TokenContext } from '../../context/context';
 import styles from './SignUp.module.css';
+import axios from 'axios';
 
 export const SignUp = () => {
-    const { dispatch } = useContext(TokenContext);
+
+    const { updateToken, updateLoggedIn, updateEmail } = useContext(TokenContext);
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        fullname: '',
+        name: '',
         phone: '',
         email: '',
         password: '',
@@ -36,9 +37,9 @@ export const SignUp = () => {
                 const statusCode = res.status; // Check the status code from the backend
                 if (statusCode === 201) {
                     const token = res.data.token.access_token;
-                    // Dispatch action to update token and login state
-                    dispatch({ type: 'SET_TOKEN', payload: token });
-                    dispatch({ type: 'SET_LOGGED_IN', payload: true });
+                    updateToken(token);
+                    updateLoggedIn(true);
+                    updateEmail(formData.email);
                     navigate('/user/home'); // Navigate to user/home page
                 } else {
                     // console.log(res); // Log the entire response object for debugging
@@ -58,8 +59,7 @@ export const SignUp = () => {
                 }
             });
 
-    }, [formData, dispatch, navigate]);
-
+    }, [formData, navigate, updateEmail, updateLoggedIn, updateToken]);
 
 
 
@@ -73,7 +73,7 @@ export const SignUp = () => {
                         <form action="#">
                             <div className={`${styles.field} ${styles['input-field']}`}>
                                 <input type="text"
-                                    name="fullname"
+                                    name="name"
                                     placeholder='Full name'
                                     value={formData.fullname}
                                     onChange={handleChange}

@@ -1,7 +1,7 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import './Header.css'
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import { NavLink } from 'react-router-dom';
+import React from 'react';
+import './Header.css'
 
 export const Header = () => {
     return (
@@ -14,7 +14,7 @@ export const Header = () => {
             <div className="container"> {/* Wrap the contents of navbar in a container */}
                 <NavLink className="navbar-brand" to="/">
                     <img
-                        src="logo192.png"
+                        src="/logo192.png"
                         alt="Logo"
                         style={{
                             height: '50px',
@@ -42,12 +42,12 @@ export const Header = () => {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink className="nav-link" activeClassName="active" to="/">
+                            <NavLink className="nav-link" activeclassname="active" to="/">
                                 <b>Home</b>
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" activeClassName="active" to="/about">
+                            <NavLink className="nav-link" activeclassname="active" to="/about">
                                 <b>About</b>
                             </NavLink>
                         </li>

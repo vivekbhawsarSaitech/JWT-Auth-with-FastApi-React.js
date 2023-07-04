@@ -3,21 +3,22 @@ from typing import Optional
 
 # User model
 class UserSchema(BaseModel):
-    fullname : str = Field(..., min_length=2)
+    name : str = Field(..., min_length=2)
     phone: int = Field(..., ge=1000000000)
     email: str = Field(..., min_length=5)
     password: str = Field(..., min_length=8)
     dob: str = Field(..., min_length=4)
     gender: str = Field(...,min_length=1)
     country : str = Field(..., min_length=2)
-    profilePhoto: Optional[bytes] = None
+    profilePhoto: Optional[str] = None
 
 
     class Config:
         schema_extra = {
             "example": {
-                "fullname" : "Joe Doe",
+                "name" : "Joe Doe",
                 "email" : "joe@xyz.com",
+                "phone": 0000000000 ,
                 "password" : "anyanyany",
                 "dob" : "03-03-2001",
                 "gender" : "male",
@@ -37,7 +38,3 @@ class UserLoginSchema(BaseModel):
                 "password": "any"
             }
         }
-
-class ImageData(BaseModel):
-    image_data: str
-    user_email: str
